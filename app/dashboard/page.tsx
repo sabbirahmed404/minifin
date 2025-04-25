@@ -13,8 +13,9 @@ import {
   DollarSign,
   TrendingUp,
   Plus,
+  Clock,
 } from "lucide-react";
-import { format } from "date-fns";
+import { format, differenceInDays } from "date-fns";
 import AppLayout from "../AppLayout";
 import LoadingOverlay from "../components/LoadingOverlay";
 import { TimeFilter } from "../components/TimeFilter";
@@ -41,6 +42,14 @@ export default function Dashboard() {
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 5);
 
+  // Get future expenses (expenses with dates in the future)
+  const futureExpenses = transactions
+    .filter(t => t.type === "expense" && new Date(t.date) > new Date())
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .slice(0, 5); // Show only the 5 nearest future expenses
+  
+  const totalFutureExpenses = futureExpenses.reduce((sum, t) => sum + t.amount, 0);
+
   // Helper function to get emoji icon for category
   const getCategoryIcon = (category: string) => {
     const icons: Record<string, string> = {
@@ -55,6 +64,11 @@ export default function Dashboard() {
       salary: "💰",
       investments: "📈",
       gifts: "🎁",
+      rent: "🏠",
+      installments: "💸",
+      insurance: "🛡️",
+      taxes: "📋",
+      subscriptions: "📱",
     };
     return icons[category] || "📝";
   };
@@ -69,7 +83,7 @@ export default function Dashboard() {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Dashboard</h1>
           <Button className="bg-[#BE3144] hover:bg-[#872341]" asChild>
-            <Link href="/transactions/new" className="flex items-center gap-1">
+            <Link href="/transactions/new" className="flex items-center gap-1 text-white">
               <Plus className="h-4 w-4" />
               Add Transaction
             </Link>
@@ -132,6 +146,62 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </div>
+        
+        {/* Future Expenses Card */}
+        <Card className="bg-card border-[#BE3144]/30 mb-8">
+          <CardHeader className="pb-2">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full">
+              <CardTitle className="font-medium">
+                Future Expenses
+              </CardTitle>
+              <div className="text-xl font-bold hidden sm:block">{formatCurrency(totalFutureExpenses)}</div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {futureExpenses.length > 0 ? (
+                futureExpenses.map((expense) => {
+                  const daysRemaining = differenceInDays(new Date(expense.date), new Date());
+                  return (
+                    <div
+                      key={expense.id}
+                      className="flex items-center justify-between border-b border-[#BE3144]/10 pb-3"
+                    >
+                      <div className="flex items-center">
+                        <div className="mr-4 rounded-full bg-[#09122C] p-2">
+                          <span className="text-xl">{getCategoryIcon(expense.category)}</span>
+                        </div>
+                        <div>
+                          <p className="font-medium">{expense.description}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {format(new Date(expense.date), "PP")}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end">
+                        <div className="font-medium text-[#E17564]">
+                          -{formatCurrency(expense.amount)}
+                        </div>
+                        <div className="flex items-center text-xs text-amber-500">
+                          <Clock className="h-3 w-3 mr-1" />
+                          <span>in {daysRemaining} {daysRemaining === 1 ? 'day' : 'days'}</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="text-center py-4 text-muted-foreground">
+                  No upcoming expenses scheduled.
+                </div>
+              )}
+            </div>
+            {/* Show total amount at bottom for mobile */}
+            <div className="mt-4 text-right sm:hidden">
+              <div className="text-xl font-bold">{formatCurrency(totalFutureExpenses)}</div>
+            </div>
+          </CardContent>
+        </Card>
         
         <Tabs defaultValue="transactions" className="w-full">
           <TabsList className="mb-4 bg-[#09122C] border border-[#BE3144]/30">

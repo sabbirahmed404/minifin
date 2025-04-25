@@ -52,6 +52,11 @@ export default function TransactionsPage() {
       salary: "💰",
       investments: "📈",
       gifts: "🎁",
+      rent: "🏠",
+      installments: "💸",
+      insurance: "🛡️",
+      taxes: "📋",
+      subscriptions: "📱",
     };
     return icons[category] || "📝";
   };
@@ -80,7 +85,7 @@ export default function TransactionsPage() {
             disabled={isLoading || isDeleting}
             asChild
           >
-            <Link href="/transactions/new" className="flex items-center gap-1">
+            <Link href="/transactions/new" className="flex items-center gap-1 text-white">
               <Plus className="h-4 w-4" />
               Add Transaction
             </Link>

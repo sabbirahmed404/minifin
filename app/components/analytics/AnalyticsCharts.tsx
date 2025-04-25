@@ -43,6 +43,11 @@ export const categoryColors: Record<string, string> = {
   salary: '#66BB6A',
   investments: '#26A69A',
   gifts: '#AB47BC',
+  rent: '#EC407A',
+  installments: '#7E57C2',
+  insurance: '#5C6BC0',
+  taxes: '#42A5F5',
+  subscriptions: '#29B6F6',
 };
 
 // Helper to get color for a category

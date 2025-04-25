@@ -35,7 +35,8 @@ const formSchema = z.object({
   category: z.enum([
     "food", "transportation", "utilities", "entertainment", 
     "shopping", "health", "education", "other", 
-    "salary", "investments", "gifts"
+    "salary", "investments", "gifts", "rent", 
+    "installments", "insurance", "taxes", "subscriptions"
   ]) as z.ZodEnum<[CategoryType, ...CategoryType[]]>,
 });
 
@@ -112,6 +113,13 @@ export default function TransactionForm({ transactionId, mode }: TransactionForm
     { label: "Shopping", value: "shopping" },
     { label: "Health", value: "health" },
     { label: "Education", value: "education" },
+    { label: "Rent", value: "rent" },
+    { label: "Installments", value: "installments" },
+    { label: "Insurance", value: "insurance" },
+    { label: "Taxes", value: "taxes" },
+    { label: "Subscriptions", value: "subscriptions" },
+    { label: "Gifts", value: "gifts" },
+    { label: "Investments", value: "investments" },
     { label: "Other", value: "other" },
   ];
 

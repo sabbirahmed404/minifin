@@ -35,7 +35,7 @@ const NavItem = ({ href, label, icon }: NavItemProps) => {
 
 export default function MobileNav() {
   return (
-    <div className="md:hidden fixed bottom-3 left-0 right-0 h-20 border-t border-[#BE3144]/20 bg-[#09122C] px-4 py-2 flex items-center justify-around">
+    <div className="md:hidden fixed bottom-0 left-0 right-0 h-24 border-t border-[#BE3144]/20 bg-[#09122C] px-4 py-2 flex items-center justify-around">
       <NavItem
         href="/dashboard"
         label="Dashboard"

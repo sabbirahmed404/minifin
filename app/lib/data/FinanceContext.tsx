@@ -10,7 +10,7 @@ import {
 } from "../firebase/firestore";
 
 export type TransactionType = "income" | "expense";
-export type CategoryType = "food" | "transportation" | "utilities" | "entertainment" | "shopping" | "health" | "education" | "other" | "salary" | "investments" | "gifts";
+export type CategoryType = "food" | "transportation" | "utilities" | "entertainment" | "shopping" | "health" | "education" | "other" | "salary" | "investments" | "gifts" | "rent" | "installments" | "insurance" | "taxes" | "subscriptions";
 export type TimeFilterOption = "7days" | "month" | "year" | "all";
 
 export interface Transaction {
