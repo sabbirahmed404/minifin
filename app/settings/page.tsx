@@ -1,6 +1,4 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import PincodeChanger from "@/components/PincodeChanger";
-import { changeOwnerPin } from "@/lib/auth";
 import AppLayout from "../AppLayout";
 
 export default function SettingsPage() {
@@ -17,7 +15,9 @@ export default function SettingsPage() {
           </TabsList>
           
           <TabsContent value="security" className="space-y-4">
-            <PincodeChanger onChangePincode={changeOwnerPin} />
+            <div className="text-muted-foreground">
+              Security settings coming soon...
+            </div>
           </TabsContent>
           
           <TabsContent value="appearance">
