@@ -1,0 +1,12 @@
+app/components/FirebaseStatus.tsx
+app/components/Sidebar.tsx
+app/components/TimeFilter.tsx
+app/components/TransactionForm.tsx
+app/components/analytics/AnalyticsCharts.tsx
+app/components/ui/input.tsx
+app/dashboard/page.tsx
+app/lib/api/airtable.ts
+app/lib/firebase/analytics.ts
+app/lib/firebase/firestore.ts
+app/settings/firebase-settings.tsx
+app/settings/simple-page.tsx 

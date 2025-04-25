@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useFinance, Transaction, CategoryType } from "../lib/data/FinanceContext";
+import { useFinance, CategoryType } from "../lib/data/FinanceContext";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";

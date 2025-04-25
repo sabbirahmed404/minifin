@@ -29,10 +29,10 @@ export default function FirebaseStatus() {
         // If we get here, the connection is working
         setStatus('connected');
         setMessage('Connected to Firebase successfully');
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Firebase connection error:', error);
         setStatus('error');
-        setMessage(`Firebase connection error: ${error?.message || 'Unknown error'}`);
+        setMessage(`Firebase connection error: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     };
 

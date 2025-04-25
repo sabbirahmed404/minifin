@@ -3,8 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, PiggyBank, BarChart3, Settings, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { LayoutDashboard, PiggyBank, BarChart3, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useFinance } from "../lib/data/FinanceContext";
 import { useCurrency } from "../lib/data/CurrencyContext";

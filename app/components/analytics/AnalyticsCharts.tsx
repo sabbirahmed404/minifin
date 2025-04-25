@@ -50,10 +50,6 @@ export const getColorForCategory = (category: string): string => {
   return categoryColors[category] || '#7F8FA6'; // Default to gray if category not found
 };
 
-interface TimeRangeProps {
-  timeRange: 'week' | 'month' | 'year' | 'all';
-}
-
 // Component for Income vs Expenses line chart
 export function IncomeVsExpensesChart({ 
   transactions, 
@@ -63,7 +59,6 @@ export function IncomeVsExpensesChart({
   timeRange: 'week' | 'month' | 'year' | 'all'
 }) {
   const { currentCurrency } = useCurrency();
-  const today = new Date();
   
   // Generate date labels and filter transactions based on time range
   const { labels, filteredTransactions } = getTimeRangeData(transactions, timeRange);
@@ -360,16 +355,12 @@ export function MonthlySummaryChart({ transactions }: { transactions: Transactio
 
 // Helper functions
 function getDateFormat(timeRange: 'week' | 'month' | 'year' | 'all'): string {
-  switch (timeRange) {
-    case 'week':
-      return 'EEE';
-    case 'month':
-      return 'dd';
-    case 'year':
-      return 'MMM';
-    case 'all':
-      return 'MMM yyyy';
-  }
+  const dateFormat = timeRange === 'week' ? 'EEE' 
+    : timeRange === 'month' ? 'd MMM'
+    : timeRange === 'year' ? 'MMM'
+    : 'MMM yyyy';
+  
+  return dateFormat;
 }
 
 function getTimeRangeData(transactions: Transaction[], timeRange: 'week' | 'month' | 'year' | 'all') {
