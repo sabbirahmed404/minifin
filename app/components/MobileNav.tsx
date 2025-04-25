@@ -54,7 +54,6 @@ export default function MobileNav() {
           >
             <div className="flex flex-col items-center justify-center">
               <Plus className="h-6 w-6" />
-              <span className="text-xs text-white mt-1">Add</span>
             </div>
           </Link>
         </div>

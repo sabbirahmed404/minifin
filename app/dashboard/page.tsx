@@ -99,10 +99,6 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{formatCurrency(totalBalance)}</div>
-              <div className="mt-2 flex items-center text-xs text-green-500">
-                <ArrowUpRight className="h-4 w-4 mr-1" /> 
-                <span>+2.5% from last month</span>
-              </div>
             </CardContent>
           </Card>
           
