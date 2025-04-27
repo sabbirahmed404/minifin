@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -13,8 +13,20 @@ import {
   Info,
 } from "lucide-react";
 import AppLayout from "../AppLayout";
+import { usePin } from "../lib/data/PinContext";
+import { useRouter } from "next/navigation";
 
 export default function Demo() {
+  const { enterDemoMode, isDemo } = usePin();
+  const router = useRouter();
+  
+  // Ensure we're in demo mode
+  useEffect(() => {
+    if (!isDemo) {
+      enterDemoMode();
+    }
+  }, [isDemo, enterDemoMode]);
+  
   // Sample demo data
   const demoBalance = 1250.75;
   const demoIncome = 2000;

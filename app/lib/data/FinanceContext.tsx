@@ -113,30 +113,33 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const initializeData = async () => {
       try {
+        // Always use sample data in demo mode and ignore any Firebase settings
+        if (isDemo) {
+          console.log('Using demo mode with sample data');
+          setTransactions(SAMPLE_TRANSACTIONS);
+          setIsLoading(false);
+          return;
+        }
+        
         // Check if Firestore sync flag is set in localStorage
         const syncStatus = localStorage.getItem("firestore_synced");
         const wasPreviouslySynced = syncStatus ? JSON.parse(syncStatus) : false;
         
-        // If using mock data, use sample data or localStorage
-        if (useMockData) {
-          console.log('Using mock data mode');
-          // In demo mode, always use sample transactions
-          if (isDemo) {
-            setTransactions(SAMPLE_TRANSACTIONS);
+        // If using mock data but not in demo mode, use localStorage or sample data
+        if (isMockMode) {
+          console.log('Using mock data mode (development)');
+          // In dev mock mode, check localStorage first
+          const savedTransactions = localStorage.getItem("finance_transactions");
+          if (savedTransactions) {
+            setTransactions(JSON.parse(savedTransactions));
           } else {
-            // In dev mock mode, check localStorage first
-            const savedTransactions = localStorage.getItem("finance_transactions");
-            if (savedTransactions) {
-              setTransactions(JSON.parse(savedTransactions));
-            } else {
-              setTransactions(SAMPLE_TRANSACTIONS);
-            }
+            setTransactions(SAMPLE_TRANSACTIONS);
           }
           setIsLoading(false);
           return;
         }
         
-        // Real mode, attempt to load from Firestore first
+        // From here, we use Firebase as we're not in demo or mock mode
         try {
           console.log('Attempting to load data from Firestore...');
           const firestoreTransactions = await getAllTransactions();

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { usePin } from "../lib/data/PinContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -9,6 +10,7 @@ import { LockIcon, KeyIcon, PlayIcon } from "lucide-react";
 
 export default function PinEntry() {
   const { authenticateWithPin, enterDemoMode } = usePin();
+  const router = useRouter();
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
 
@@ -25,11 +27,15 @@ export default function PinEntry() {
     if (!success) {
       setError("Invalid PIN code");
       setPin("");
+    } else {
+      // Navigate to dashboard on successful login
+      router.push("/dashboard");
     }
   };
 
   const handleDemoMode = () => {
     enterDemoMode();
+    router.push("/dashboard");
   };
 
   return (

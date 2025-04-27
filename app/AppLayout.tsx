@@ -3,7 +3,6 @@
 import { ReactNode } from "react";
 import Sidebar from "./components/Sidebar";
 import MobileNav from "./components/MobileNav";
-import DemoModeIndicator from "./components/DemoModeIndicator";
 import { usePin } from "./lib/data/PinContext";
 import RouteGuard from "./components/RouteGuard";
 
@@ -23,7 +22,6 @@ export default function AppLayout({ children }: AppLayoutProps) {
           <div className="md:hidden pb-[75px]"></div>
         </main>
         <MobileNav />
-        <DemoModeIndicator />
       </div>
     </RouteGuard>
   );
