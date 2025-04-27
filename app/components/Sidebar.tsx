@@ -9,6 +9,7 @@ import { useFinance } from "../lib/data/FinanceContext";
 import { useCurrency } from "../lib/data/CurrencyContext";
 import { usePin } from "../lib/data/PinContext";
 import { PlayCircle } from "lucide-react";
+import DemoLink from "./DemoLink";
 
 interface NavItemProps {
   href: string;
@@ -18,18 +19,24 @@ interface NavItemProps {
 
 const NavItem = ({ href, label, icon }: NavItemProps) => {
   const pathname = usePathname();
-  const isActive = pathname === href;
+  const isActive = pathname === href || pathname.startsWith(href + "/");
+  const { isDemo } = usePin();
+  
+  const linkClassName = cn(
+    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all",
+    isActive 
+      ? "bg-[#872341] text-white" 
+      : "text-gray-400 hover:bg-[#872341]/10 hover:text-[#E17564]"
+  );
 
-  return (
-    <Link 
-      href={href} 
-      className={cn(
-        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all",
-        isActive 
-          ? "bg-[#872341] text-white" 
-          : "text-gray-400 hover:bg-[#872341]/10 hover:text-[#E17564]"
-      )}
-    >
+  // Use DemoLink for demo mode, regular Link otherwise
+  return isDemo ? (
+    <DemoLink href={href} className={linkClassName}>
+      {icon}
+      {label}
+    </DemoLink>
+  ) : (
+    <Link href={href} className={linkClassName}>
       {icon}
       {label}
     </Link>
@@ -44,15 +51,29 @@ export default function Sidebar() {
   return (
     <aside className="hidden md:flex h-screen w-64 flex-col bg-[#09122C] border-r border-[#BE3144]/20 p-4">
       <div className="flex justify-center items-center px-2 mb-4">
-        <Link href="/dashboard">
-          <Image 
-            src="/logo.png" 
-            alt="MiniFin Logo" 
-            width={140} 
-            height={140} 
-            className="h-auto w-auto" 
-          />
-        </Link>
+        {isDemo ? (
+          <DemoLink href="/dashboard">
+            <Image 
+              src="/logo.png" 
+              alt="MiniFin Logo" 
+              width={140} 
+              height={70} 
+              priority
+              className="h-auto w-auto" 
+            />
+          </DemoLink>
+        ) : (
+          <Link href="/dashboard">
+            <Image 
+              src="/logo.png" 
+              alt="MiniFin Logo" 
+              width={140} 
+              height={70} 
+              priority
+              className="h-auto w-auto" 
+            />
+          </Link>
+        )}
       </div>
       
       <div className="px-2">

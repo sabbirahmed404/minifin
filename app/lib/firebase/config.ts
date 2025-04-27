@@ -52,6 +52,25 @@ const isInDemoMode = () => {
         (window.location.pathname.includes('/demo') || 
          window.location.search.includes('demo=true'));
       
+      // Add demo=true parameter to URL if in demo mode but not in URL yet
+      // This helps maintain demo state across page refreshes
+      if (isDemoMode && !window.location.search.includes('demo=true') && 
+          !window.location.pathname.includes('/demo') &&
+          !window.location.pathname.includes('/pincode')) {
+        
+        // Don't modify URL on initial page load to avoid issues
+        const hasLoadedBefore = sessionStorage.getItem('has_loaded_before');
+        if (hasLoadedBefore) {
+          const url = new URL(window.location.href);
+          url.searchParams.set('demo', 'true');
+          
+          // Use history.replaceState to avoid adding a new entry to the navigation history
+          window.history.replaceState({}, '', url.toString());
+        } else {
+          sessionStorage.setItem('has_loaded_before', 'true');
+        }
+      }
+      
       return isDemoMode || isOnDemoPage;
     }
     return false;

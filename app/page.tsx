@@ -6,6 +6,7 @@ import { usePin } from "./lib/data/PinContext";
 import { Button } from "@/components/ui/button";
 import { PlayIcon, LockIcon } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Home() {
   const router = useRouter();
@@ -33,8 +34,17 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#09122C] text-white px-4">
       <div className="w-full max-w-md text-center space-y-8">
-        <div className="space-y-4">
-          <h1 className="text-4xl font-bold tracking-tight">MiniFin</h1>
+        <div className="space-y-4 flex flex-col items-center">
+          <div className="flex justify-center mb-2">
+            <Image 
+              src="/logo.png" 
+              alt="MiniFin Logo" 
+              width={180} 
+              height={90} 
+              priority
+              className="h-auto w-auto" 
+            />
+          </div>
           <p className="text-xl">Your personal financial dashboard</p>
         </div>
         

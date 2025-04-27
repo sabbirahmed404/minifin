@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, PiggyBank, BarChart3, Settings, Plus } from "lucide-react";
 import { cn } from "../../lib/utils";
+import { usePin } from "../lib/data/PinContext";
+import DemoLink from "./DemoLink";
 
 interface NavItemProps {
   href: string;
@@ -13,27 +15,37 @@ interface NavItemProps {
 
 const NavItem = ({ href, label, icon }: NavItemProps) => {
   const pathname = usePathname();
-  const isActive = pathname === href;
+  const isActive = pathname === href || pathname.startsWith(href + "/");
+  const { isDemo } = usePin();
+  
+  const linkClassName = cn(
+    "flex flex-col items-center justify-center gap-1 text-xs",
+    isActive
+      ? "text-[#BE3144]"
+      : "text-gray-400 hover:text-[#BE3144]"
+  );
 
+  // Use DemoLink for demo mode, regular Link otherwise
   return (
     <div className="h-12 w-16 flex items-center justify-center">
-      <Link
-        href={href}
-        className={cn(
-          "flex flex-col items-center justify-center gap-1 text-xs",
-          isActive
-            ? "text-[#BE3144]"
-            : "text-gray-400 hover:text-[#BE3144]"
-        )}
-      >
-        {icon}
-        <span>{label}</span>
-      </Link>
+      {isDemo ? (
+        <DemoLink href={href} className={linkClassName}>
+          {icon}
+          <span>{label}</span>
+        </DemoLink>
+      ) : (
+        <Link href={href} className={linkClassName}>
+          {icon}
+          <span>{label}</span>
+        </Link>
+      )}
     </div>
   );
 };
 
 export default function MobileNav() {
+  const { isDemo } = usePin();
+  
   return (
     <div className="md:hidden fixed bottom-0 left-0 right-0 h-24 border-t border-[#BE3144]/20 bg-[#09122C] px-4 py-2 flex items-center justify-around">
       <NavItem
@@ -48,14 +60,25 @@ export default function MobileNav() {
       />
       <div className="h-12 w-16 flex items-center justify-center">
         <div className="relative -top-4">
-          <Link
-            href="/transactions/new"
-            className="flex h-14 w-14 items-center justify-center rounded-full bg-[#BE3144] text-white shadow-lg hover:bg-[#872341]"
-          >
-            <div className="flex flex-col items-center justify-center">
-              <Plus className="h-6 w-6" />
-            </div>
-          </Link>
+          {isDemo ? (
+            <DemoLink
+              href="/transactions/new"
+              className="flex h-14 w-14 items-center justify-center rounded-full bg-[#BE3144] text-white shadow-lg hover:bg-[#872341]"
+            >
+              <div className="flex flex-col items-center justify-center">
+                <Plus className="h-6 w-6" />
+              </div>
+            </DemoLink>
+          ) : (
+            <Link
+              href="/transactions/new"
+              className="flex h-14 w-14 items-center justify-center rounded-full bg-[#BE3144] text-white shadow-lg hover:bg-[#872341]"
+            >
+              <div className="flex flex-col items-center justify-center">
+                <Plus className="h-6 w-6" />
+              </div>
+            </Link>
+          )}
         </div>
       </div>
       <NavItem

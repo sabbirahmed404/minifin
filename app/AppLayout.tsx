@@ -5,6 +5,7 @@ import Sidebar from "./components/Sidebar";
 import MobileNav from "./components/MobileNav";
 import { usePin } from "./lib/data/PinContext";
 import RouteGuard from "./components/RouteGuard";
+import { usePathname, useSearchParams } from "next/navigation";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -12,6 +13,17 @@ interface AppLayoutProps {
 
 export default function AppLayout({ children }: AppLayoutProps) {
   const { isAuthenticated, logout, isDemo, enterDemoMode } = usePin();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  
+  // Check URL for demo parameter which is useful for direct links
+  useEffect(() => {
+    const isDemoParam = searchParams?.get('demo') === 'true';
+    if (isDemoParam && !isDemo) {
+      console.log('Demo parameter detected in URL, entering demo mode');
+      enterDemoMode();
+    }
+  }, [searchParams, isDemo, enterDemoMode]);
   
   // This ensures demo mode is preserved during navigation in deployed environments
   useEffect(() => {
@@ -26,6 +38,11 @@ export default function AppLayout({ children }: AppLayoutProps) {
       }
     }
   }, [isDemo, enterDemoMode]);
+  
+  // Log current path and demo status for debugging
+  useEffect(() => {
+    console.log(`Route changed to: ${pathname}, Demo mode: ${isDemo}`);
+  }, [pathname, isDemo]);
   
   return (
     <RouteGuard>

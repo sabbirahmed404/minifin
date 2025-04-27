@@ -15,6 +15,7 @@ import {
 import AppLayout from "../AppLayout";
 import { usePin } from "../lib/data/PinContext";
 import { useRouter } from "next/navigation";
+import DemoLink from "../components/DemoLink";
 
 export default function Demo() {
   const { enterDemoMode, isDemo, exitDemoMode } = usePin();
@@ -24,7 +25,7 @@ export default function Demo() {
   useEffect(() => {
     // First ensure we're in demo mode
     if (!isDemo) {
-      console.log('Activating demo mode');
+      console.log('Activating demo mode from demo page');
       
       // Exit any existing session first to clear state
       exitDemoMode();
@@ -32,11 +33,22 @@ export default function Demo() {
       // Enter demo mode
       setTimeout(() => {
         enterDemoMode();
+        
+        // Alternative: set a URL parameter to maintain demo mode across page reloads
+        const url = new URL(window.location.href);
+        if (!url.searchParams.has('demo')) {
+          url.searchParams.set('demo', 'true');
+          window.history.replaceState({}, '', url.toString());
+        }
       }, 100);
     }
     
     // Force localStorage to have demo_mode=true for Firebase checks
     localStorage.setItem('demo_mode', 'true');
+    localStorage.setItem('pin_authenticated', 'true');
+    
+    // Set a session storage flag to remember we explicitly entered demo mode
+    sessionStorage.setItem('explicit_demo_mode', 'true');
     
     // This cleanup function runs when component unmounts
     return () => {
@@ -97,17 +109,22 @@ export default function Demo() {
             <p className="text-muted-foreground">This is a preview of MiniFin with sample data</p>
           </div>
           
-          <div className="flex flex-col sm:flex-row gap-2">
-            <Button className="bg-[#09122C] hover:bg-[#1a2344] border border-[#BE3144]/30">
-              <Link href="/" className="flex items-center gap-1">
-                Return Home
-              </Link>
-            </Button>
-            <Button className="bg-[#BE3144] hover:bg-[#872341]">
-              <Link href="/pincode" className="flex items-center gap-1">
-                Access Real Data
-              </Link>
-            </Button>
+          <div className="space-y-3">
+            <div className="bg-yellow-500/10 text-yellow-500 p-2 rounded-md text-sm">
+              <p>Feel free to explore all pages in demo mode!</p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button className="bg-[#09122C] hover:bg-[#1a2344] border border-[#BE3144]/30">
+                <Link href="/" className="flex items-center gap-1">
+                  Return Home
+                </Link>
+              </Button>
+              <Button className="bg-[#BE3144] hover:bg-[#872341]">
+                <Link href="/pincode" className="flex items-center gap-1">
+                  Access Real Data
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -154,6 +171,42 @@ export default function Demo() {
                 <ArrowDownRight className="h-4 w-4 mr-1" /> 
                 <span>+3% from last month</span>
               </div>
+            </CardContent>
+          </Card>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <Card className="bg-card border-[#BE3144]/30">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>Navigation</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <p className="text-sm">Try navigating to these pages in demo mode:</p>
+                <div className="flex flex-wrap gap-2">
+                  <DemoLink href="/transactions" className="px-3 py-2 rounded-md bg-[#BE3144]/10 hover:bg-[#BE3144]/20 text-white">
+                    Transactions
+                  </DemoLink>
+                  <DemoLink href="/analytics" className="px-3 py-2 rounded-md bg-[#BE3144]/10 hover:bg-[#BE3144]/20 text-white">
+                    Analytics
+                  </DemoLink>
+                  <DemoLink href="/settings" className="px-3 py-2 rounded-md bg-[#BE3144]/10 hover:bg-[#BE3144]/20 text-white">
+                    Settings
+                  </DemoLink>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-card border-[#BE3144]/30">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>About Demo Mode</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Demo mode uses mock data and doesn't connect to Firebase. 
+                You can explore all app features without authentication.
+              </p>
             </CardContent>
           </Card>
         </div>
