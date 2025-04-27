@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, Suspense } from "react";
 import Sidebar from "./components/Sidebar";
 import MobileNav from "./components/MobileNav";
 import { usePin } from "./lib/data/PinContext";
@@ -11,9 +11,9 @@ interface AppLayoutProps {
   children: ReactNode;
 }
 
-export default function AppLayout({ children }: AppLayoutProps) {
-  const { isAuthenticated, logout, isDemo, enterDemoMode } = usePin();
-  const pathname = usePathname();
+// Create a client component that uses useSearchParams
+function DemoModeHandler() {
+  const { isDemo, enterDemoMode } = usePin();
   const searchParams = useSearchParams();
   
   // Check URL for demo parameter which is useful for direct links
@@ -24,6 +24,13 @@ export default function AppLayout({ children }: AppLayoutProps) {
       enterDemoMode();
     }
   }, [searchParams, isDemo, enterDemoMode]);
+  
+  return null; // This component doesn't render anything
+}
+
+export default function AppLayout({ children }: AppLayoutProps) {
+  const { isAuthenticated, logout, isDemo, enterDemoMode } = usePin();
+  const pathname = usePathname();
   
   // This ensures demo mode is preserved during navigation in deployed environments
   useEffect(() => {
@@ -49,6 +56,9 @@ export default function AppLayout({ children }: AppLayoutProps) {
       <div className="flex h-screen w-full">
         <Sidebar />
         <main className="flex-1 overflow-auto bg-[#09122C] text-white p-6 pb-20 md:pb-6">
+          <Suspense fallback={null}>
+            <DemoModeHandler />
+          </Suspense>
           {children}
           <div className="md:hidden pb-[75px]"></div>
         </main>
