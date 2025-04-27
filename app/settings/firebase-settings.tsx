@@ -7,8 +7,9 @@ import { useFinance } from '../lib/data/FinanceContext';
 import { isMockMode, db } from '../lib/firebase/config';
 import { collection, getDocs, limit, query } from 'firebase/firestore';
 import { initAnalytics } from '../lib/firebase/analytics';
-import { Check, X, RefreshCw, Database, Download, Info, ArrowUpDown } from 'lucide-react';
+import { Check, X, RefreshCw, Database, Download, Info, ArrowUpDown, PlayCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
+import { usePin } from '../lib/data/PinContext';
 
 export default function FirebaseSettings() {
   const { 
@@ -19,6 +20,8 @@ export default function FirebaseSettings() {
     transactions
   } = useFinance();
   
+  const { isDemo } = usePin();
+  
   const [syncMessage, setSyncMessage] = useState('');
   const [firestoreStatus, setFirestoreStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [firestoreErrorMessage, setFirestoreErrorMessage] = useState("");
@@ -27,6 +30,13 @@ export default function FirebaseSettings() {
 
   // Check Firebase connection
   useEffect(() => {
+    // Skip Firebase connection check in demo mode
+    if (isDemo) {
+      setConnectionStatus('connected');
+      setConnectionMessage('Using Firebase in demo mode');
+      return;
+    }
+
     const checkFirebaseConnection = async () => {
       try {
         if (isMockMode) {
@@ -53,7 +63,7 @@ export default function FirebaseSettings() {
     };
 
     checkFirebaseConnection();
-  }, []);
+  }, [isDemo]);
 
   const handleSyncWithFirestore = async () => {
     setFirestoreStatus("loading");
@@ -105,7 +115,15 @@ export default function FirebaseSettings() {
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Mode Indicator */}
-        {isMockMode ? (
+        {isDemo ? (
+          <Alert variant="warning" className="bg-amber-500/10 text-amber-700 border-amber-700/20">
+            <PlayCircle className="h-4 w-4" />
+            <AlertTitle>Demo Mode</AlertTitle>
+            <AlertDescription>
+              Firebase integration is disabled in demo mode. Sample data is being used instead.
+            </AlertDescription>
+          </Alert>
+        ) : isMockMode ? (
           <Alert variant="warning" className="bg-yellow-500/10 text-yellow-700 border-yellow-700/20">
             <Info className="h-4 w-4" />
             <AlertTitle>Development Mode</AlertTitle>

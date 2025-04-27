@@ -8,6 +8,7 @@ import {
   getAllTransactions,
   syncTransactionsToFirestore
 } from "../firebase/firestore";
+import { usePin } from "./PinContext";
 
 export type TransactionType = "income" | "expense";
 export type CategoryType = "food" | "transportation" | "utilities" | "entertainment" | "shopping" | "health" | "education" | "other" | "salary" | "investments" | "gifts" | "rent" | "installments" | "insurance" | "taxes" | "subscriptions";
@@ -100,9 +101,13 @@ const isMockMode =
   process.env.NEXT_PUBLIC_FIREBASE_API_KEY === 'your_firebase_api_key';
 
 export const FinanceProvider = ({ children }: { children: ReactNode }) => {
+  const { isDemo } = usePin();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isFirestoreSynced, setIsFirestoreSynced] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  
+  // Check if we're using mock mode (either in demo mode or with mock Firebase config)
+  const useMockData = isDemo || isMockMode;
   
   // Load data on mount (client-side only)
   useEffect(() => {
@@ -112,19 +117,26 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
         const syncStatus = localStorage.getItem("firestore_synced");
         const wasPreviouslySynced = syncStatus ? JSON.parse(syncStatus) : false;
         
-        // If mock mode, use sample data or localStorage
-        if (isMockMode) {
-          const savedTransactions = localStorage.getItem("finance_transactions");
-          if (savedTransactions) {
-            setTransactions(JSON.parse(savedTransactions));
-          } else {
+        // If using mock data, use sample data or localStorage
+        if (useMockData) {
+          console.log('Using mock data mode');
+          // In demo mode, always use sample transactions
+          if (isDemo) {
             setTransactions(SAMPLE_TRANSACTIONS);
+          } else {
+            // In dev mock mode, check localStorage first
+            const savedTransactions = localStorage.getItem("finance_transactions");
+            if (savedTransactions) {
+              setTransactions(JSON.parse(savedTransactions));
+            } else {
+              setTransactions(SAMPLE_TRANSACTIONS);
+            }
           }
           setIsLoading(false);
           return;
         }
         
-        // Not in mock mode, attempt to load from Firestore first
+        // Real mode, attempt to load from Firestore first
         try {
           console.log('Attempting to load data from Firestore...');
           const firestoreTransactions = await getAllTransactions();
@@ -179,16 +191,14 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
     };
 
     initializeData();
-  }, []);
+  }, [isDemo, useMockData]);
   
-  // Save to localStorage as backup when transactions change
+  // Update local storage when transactions change, but only outside of demo mode
   useEffect(() => {
-    try {
+    if (!isDemo && transactions.length > 0) {
       localStorage.setItem("finance_transactions", JSON.stringify(transactions));
-    } catch (error) {
-      console.error("Failed to save transactions to localStorage:", error);
     }
-  }, [transactions]);
+  }, [transactions, isDemo]);
   
   // Save Firestore sync status to localStorage when it changes
   useEffect(() => {
@@ -204,7 +214,7 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
       setIsLoading(true);
       let id: string;
       
-      if (!isMockMode) {
+      if (!useMockData) {
         // Add to Firestore first
         try {
           id = await addFirestoreTransaction(transaction);
@@ -237,7 +247,7 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
       setIsLoading(true);
       const updatedTransaction = { ...transaction, id };
       
-      if (!isMockMode) {
+      if (!useMockData) {
         // Update in Firestore first
         try {
           await updateFirestoreTransaction(id, transaction);
@@ -262,7 +272,7 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
     try {
       setIsLoading(true);
       
-      if (!isMockMode) {
+      if (!useMockData) {
         // Delete from Firestore first
         try {
           await deleteFirestoreTransaction(id);
@@ -322,7 +332,7 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
   
   // Function to sync current data to Firestore
   const syncWithFirestore = async (): Promise<boolean> => {
-    if (isMockMode) {
+    if (useMockData) {
       console.log("Mock mode: Simulating Firestore sync");
       setIsFirestoreSynced(true);
       setIsLoading(false);
@@ -369,7 +379,7 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
   
   // Function to load data from Firestore, replacing local data
   const loadFromFirestore = async (): Promise<boolean> => {
-    if (isMockMode) {
+    if (useMockData) {
       console.log("Mock mode: Simulating Firestore data load");
       setIsFirestoreSynced(true);
       return true;

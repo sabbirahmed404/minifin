@@ -3,6 +3,7 @@
 import { ReactNode } from "react";
 import { FinanceProvider } from "./lib/data/FinanceContext";
 import { CurrencyProvider } from "./lib/data/CurrencyContext";
+import { PinProvider } from "./lib/data/PinContext";
 
 interface ProvidersProps {
   children: ReactNode;
@@ -10,8 +11,10 @@ interface ProvidersProps {
 
 export default function Providers({ children }: ProvidersProps) {
   return (
-    <CurrencyProvider>
-      <FinanceProvider>{children}</FinanceProvider>
-    </CurrencyProvider>
+    <PinProvider>
+      <CurrencyProvider>
+        <FinanceProvider>{children}</FinanceProvider>
+      </CurrencyProvider>
+    </PinProvider>
   );
 } 

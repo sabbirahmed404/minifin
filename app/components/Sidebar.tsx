@@ -7,6 +7,8 @@ import { LayoutDashboard, PiggyBank, BarChart3, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useFinance } from "../lib/data/FinanceContext";
 import { useCurrency } from "../lib/data/CurrencyContext";
+import { usePin } from "../lib/data/PinContext";
+import { PlayCircle } from "lucide-react";
 
 interface NavItemProps {
   href: string;
@@ -37,23 +39,32 @@ const NavItem = ({ href, label, icon }: NavItemProps) => {
 export default function Sidebar() {
   const { totalBalance, totalIncome, totalExpenses } = useFinance();
   const { formatCurrency, currentCurrency } = useCurrency();
+  const { isDemo } = usePin();
 
   return (
     <aside className="hidden md:flex h-screen w-64 flex-col bg-[#09122C] border-r border-[#BE3144]/20 p-4">
-      <div className="flex items-center  px-2">
+      <div className="flex justify-center items-center px-2 mb-4">
         <Link href="/dashboard">
           <Image 
             src="/logo.png" 
             alt="MiniFin Logo" 
-            width={64} 
-            height={64} 
-            className="h-30 w-auto" 
+            width={140} 
+            height={140} 
+            className="h-auto w-auto" 
           />
         </Link>
       </div>
       
+      <div className="px-2">
+        {isDemo && (
+          <span className="bg-amber-500/20 text-amber-400 text-xs py-1 px-2 rounded-full flex items-center inline-block">
+            <PlayCircle className="h-3 w-3 mr-1" />
+            Demo
+          </span>
+        )}
+      </div>
       
-      <nav className="space-y-2">
+      <nav className="space-y-2 mt-6">
         <NavItem 
           href="/dashboard" 
           label="Dashboard" 

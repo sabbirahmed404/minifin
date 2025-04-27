@@ -4,15 +4,21 @@ import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, Trash2 } from 'lucide-react';
+import { Download, Trash2, LogOut, Lock, PlayCircle, Github } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
 import AppLayout from "../AppLayout";
 import FirebaseSettings from "./firebase-settings";
 import { useFinance } from '../lib/data/FinanceContext';
 import { useCurrency, currencies, type CurrencyCode } from '../lib/data/CurrencyContext';
+import { usePin } from '../lib/data/PinContext';
+import { useRouter } from 'next/navigation';
 
 export default function SettingsPage() {
   const { transactions } = useFinance();
   const { currentCurrency, setCurrency } = useCurrency();
+  const { logout, isDemo } = usePin();
+  const router = useRouter();
   const [showExportSuccess, setShowExportSuccess] = useState(false);
   
   // Export data function
@@ -36,26 +42,33 @@ export default function SettingsPage() {
     setCurrency(e.target.value as CurrencyCode);
   };
 
+  const handleLogout = () => {
+    logout();
+    router.push('/');
+  };
+
   return (
     <AppLayout>
       <div className="max-w-5xl mx-auto">
         <h1 className="text-2xl font-bold mb-6">Settings</h1>
         
         <Tabs defaultValue="general" className="space-y-4">
-          <TabsList className="mb-4 bg-[#09122C] border border-[#BE3144]/30">
-            <TabsTrigger value="general" className="data-[state=active]:bg-[#872341] data-[state=active]:text-white">
-              General
-            </TabsTrigger>
-            <TabsTrigger value="security" className="data-[state=active]:bg-[#872341] data-[state=active]:text-white">
-              Security
-            </TabsTrigger>
-            <TabsTrigger value="data" className="data-[state=active]:bg-[#872341] data-[state=active]:text-white">
-              Data Management
-            </TabsTrigger>
-            <TabsTrigger value="integrations" className="data-[state=active]:bg-[#872341] data-[state=active]:text-white">
-              Integrations
-            </TabsTrigger>
-          </TabsList>
+          <div className="overflow-x-auto scrollbar-hide" style={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
+            <TabsList className="mb-4 bg-[#09122C] border border-[#BE3144]/30 flex-nowrap min-w-max whitespace-nowrap">
+              <TabsTrigger value="general" className="data-[state=active]:bg-[#872341] data-[state=active]:text-white">
+                General
+              </TabsTrigger>
+              <TabsTrigger value="security" className="data-[state=active]:bg-[#872341] data-[state=active]:text-white">
+                Security
+              </TabsTrigger>
+              <TabsTrigger value="data" className="data-[state=active]:bg-[#872341] data-[state=active]:text-white">
+                Data Management
+              </TabsTrigger>
+              <TabsTrigger value="integrations" className="data-[state=active]:bg-[#872341] data-[state=active]:text-white">
+                Integrations
+              </TabsTrigger>
+            </TabsList>
+          </div>
           
           <TabsContent value="general" className="space-y-4">
             <Card className="bg-card border-[#BE3144]/30">
@@ -95,6 +108,36 @@ export default function SettingsPage() {
                 </div>
               </CardContent>
             </Card>
+
+            <Card className="bg-card border-[#BE3144]/30">
+              <CardHeader>
+                <CardTitle>About</CardTitle>
+                <p className="text-sm text-muted-foreground">About this application</p>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex flex-col items-center justify-center mb-4">
+                  <Image 
+                    src="/logo.png" 
+                    alt="MiniFin Logo" 
+                    width={100} 
+                    height={100} 
+                    className="h-auto w-auto mb-4" 
+                  />
+                  <p className="text-sm text-center">This is a project solely for personal use</p>
+                  <div className="flex items-center mt-2">
+                    <Github className="h-4 w-4 mr-2" />
+                    <Link 
+                      href="https://github.com/sabbirahmed404" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-sm text-blue-500 hover:underline"
+                    >
+                      Developed by Sabbirahmed404
+                    </Link>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
           
           <TabsContent value="security" className="space-y-4">
@@ -105,27 +148,44 @@ export default function SettingsPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Enable PIN Protection</p>
-                    <p className="text-sm text-muted-foreground">
-                      Require a PIN to access the application
-                    </p>
-                  </div>
-                  <div className="h-6 w-11 rounded-full bg-gray-300 relative cursor-pointer">
-                    <div className="h-5 w-5 rounded-full bg-white absolute top-0.5 left-0.5"></div>
+                  <div className="flex items-start space-x-3">
+                    <div className="mt-0.5">
+                      <Lock className="h-5 w-5 text-[#BE3144]" />
+                    </div>
+                    <div>
+                      <p className="font-medium">PIN Protection</p>
+                      <p className="text-sm text-muted-foreground">
+                        Your account is protected with a PIN
+                      </p>
+                    </div>
                   </div>
                 </div>
                 
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Biometric Authentication</p>
-                    <p className="text-sm text-muted-foreground">
-                      Use fingerprint or face recognition to access the app
-                    </p>
+                {isDemo && (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-start space-x-3">
+                      <div className="mt-0.5">
+                        <PlayCircle className="h-5 w-5 text-amber-500" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Demo Mode Active</p>
+                        <p className="text-sm text-muted-foreground">
+                          You're currently using the app in demo mode with sample data
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="h-6 w-11 rounded-full bg-gray-300 relative cursor-pointer">
-                    <div className="h-5 w-5 rounded-full bg-white absolute top-0.5 left-0.5"></div>
-                  </div>
+                )}
+                
+                <div className="pt-4 border-t border-[#BE3144]/10">
+                  <Button 
+                    onClick={handleLogout}
+                    variant="destructive" 
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+                  </Button>
                 </div>
               </CardContent>
             </Card>

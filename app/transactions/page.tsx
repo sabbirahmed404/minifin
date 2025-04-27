@@ -87,7 +87,7 @@ export default function TransactionsPage() {
           >
             <Link href="/transactions/new" className="flex items-center gap-1 text-white">
               <Plus className="h-4 w-4" />
-              Add Transaction
+              <span className="text-white">Add Transaction</span>
             </Link>
           </Button>
         </div>
