@@ -15,6 +15,7 @@ interface PinContextType {
   logout: () => void;
 }
 
+// Create the context with undefined as initial value
 const PinContext = createContext<PinContextType | undefined>(undefined);
 
 export const usePin = () => {
@@ -49,6 +50,28 @@ export const PinProvider = ({ children }: { children: ReactNode }) => {
       console.log(`Auth state on mount: isAuthenticated=${storedAuthState === "true"}, isDemo=${storedDemoState === "true"}`);
     }
   }, []);
+
+  // Also check on every route change
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const handleRouteChange = () => {
+        const storedDemoState = localStorage.getItem("demo_mode");
+        
+        if (storedDemoState === "true" && !isDemo) {
+          console.log('Route changed: Restoring demo mode state');
+          setIsDemo(true);
+          setIsAuthenticated(true);
+        }
+      };
+
+      // Add event listener for route changes
+      window.addEventListener('popstate', handleRouteChange);
+      
+      return () => {
+        window.removeEventListener('popstate', handleRouteChange);
+      };
+    }
+  }, [isDemo]);
 
   const authenticateWithPin = (pin: string): boolean => {
     if (pin === DEFAULT_PIN) {
@@ -90,23 +113,16 @@ export const PinProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem("demo_mode");
   };
 
-  // Log state changes for debugging
-  useEffect(() => {
-    console.log(`Auth state updated: isAuthenticated=${isAuthenticated}, isDemo=${isDemo}`);
-  }, [isAuthenticated, isDemo]);
-
-  const value = {
-    isAuthenticated,
-    isPinRequired,
-    isDemo,
-    authenticateWithPin,
-    enterDemoMode,
-    exitDemoMode,
-    logout
-  };
-
   return (
-    <PinContext.Provider value={value}>
+    <PinContext.Provider value={{ 
+      isAuthenticated, 
+      isPinRequired, 
+      isDemo,
+      authenticateWithPin,
+      enterDemoMode,
+      exitDemoMode,
+      logout
+    }}>
       {children}
     </PinContext.Provider>
   );

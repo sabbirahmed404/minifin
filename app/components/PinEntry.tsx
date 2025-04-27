@@ -50,8 +50,9 @@ export default function PinEntry() {
             <Image 
               src="/logo.png" 
               alt="MiniFin Logo" 
-              width={150} 
-              height={150} 
+              width={120} 
+              height={60} 
+              priority
               className="h-auto w-auto" 
             />
           </div>

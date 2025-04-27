@@ -20,8 +20,8 @@ export default function RouteGuard({ children }: RouteGuardProps) {
     const publicRoutes = ['/', '/demo', '/pincode'];
     const isPublicRoute = publicRoutes.includes(pathname);
 
-    // Only redirect if not authenticated and not on a public route
-    if (!isAuthenticated && !isPublicRoute) {
+    // Only redirect if not authenticated and not in demo mode and not on a public route
+    if (!isAuthenticated && !isDemo && !isPublicRoute) {
       router.push("/");
     }
     
@@ -31,9 +31,9 @@ export default function RouteGuard({ children }: RouteGuardProps) {
     }, 300);
     
     return () => clearTimeout(timer);
-  }, [isAuthenticated, router, pathname]);
+  }, [isAuthenticated, isDemo, router, pathname]);
 
-  if (isLoading && !isAuthenticated) {
+  if (isLoading && !isAuthenticated && !isDemo) {
     return <LoadingOverlay show={true} message="Verifying access..." />;
   }
 

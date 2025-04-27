@@ -41,11 +41,24 @@ const auth = getAuth(app);
 
 // Helper function to check if in demo mode (will be used to prevent Firebase operations)
 const isInDemoMode = () => {
-  // In client-side code, check localStorage
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem('demo_mode') === 'true';
+  try {
+    // In client-side code, check localStorage
+    if (typeof window !== 'undefined') {
+      // Check for demo_mode in localStorage
+      const isDemoMode = localStorage.getItem('demo_mode') === 'true';
+      
+      // Check URL for demo indicator as fallback (useful for direct links to other pages)
+      const isOnDemoPage = typeof window !== 'undefined' && 
+        (window.location.pathname.includes('/demo') || 
+         window.location.search.includes('demo=true'));
+      
+      return isDemoMode || isOnDemoPage;
+    }
+    return false;
+  } catch (error) {
+    console.error('Error checking demo mode:', error);
+    return false;
   }
-  return false;
 };
 
 export { app, db, auth, isMockMode, isInDemoMode }; 
