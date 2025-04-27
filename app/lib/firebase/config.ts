@@ -39,4 +39,13 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-export { app, db, auth, isMockMode }; 
+// Helper function to check if in demo mode (will be used to prevent Firebase operations)
+const isInDemoMode = () => {
+  // In client-side code, check localStorage
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('demo_mode') === 'true';
+  }
+  return false;
+};
+
+export { app, db, auth, isMockMode, isInDemoMode }; 

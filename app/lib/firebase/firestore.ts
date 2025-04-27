@@ -13,13 +13,19 @@ import {
   setDoc,
   Firestore
 } from 'firebase/firestore';
-import { db } from './config';
+import { db, isInDemoMode } from './config';
 import { Transaction } from '../data/FinanceContext';
 
 const TRANSACTIONS_COLLECTION = 'transactions';
 
 // Utility function to check if Firestore is available
 const isFirestoreAvailable = (): boolean => {
+  // In demo mode, we pretend Firestore is not available
+  if (isInDemoMode()) {
+    console.log('Demo mode active: bypassing real Firebase operations');
+    return false;
+  }
+  
   try {
     return !!db;
   } catch (error) {
@@ -31,6 +37,10 @@ const isFirestoreAvailable = (): boolean => {
 // Add a new transaction
 export const addTransaction = async (transaction: Omit<Transaction, 'id'>): Promise<string> => {
   if (!isFirestoreAvailable()) {
+    // In demo mode, return a mock ID
+    if (isInDemoMode()) {
+      return `demo-${Date.now()}`;
+    }
     throw new Error('Firestore is not properly configured');
   }
 
@@ -50,6 +60,10 @@ export const addTransaction = async (transaction: Omit<Transaction, 'id'>): Prom
 // Update an existing transaction
 export const updateTransaction = async (id: string, transaction: Omit<Transaction, 'id'>): Promise<void> => {
   if (!isFirestoreAvailable()) {
+    // In demo mode, just return without error
+    if (isInDemoMode()) {
+      return;
+    }
     throw new Error('Firestore is not properly configured');
   }
 
@@ -68,6 +82,10 @@ export const updateTransaction = async (id: string, transaction: Omit<Transactio
 // Delete a transaction
 export const deleteTransaction = async (id: string): Promise<void> => {
   if (!isFirestoreAvailable()) {
+    // In demo mode, just return without error
+    if (isInDemoMode()) {
+      return;
+    }
     throw new Error('Firestore is not properly configured');
   }
 
@@ -82,6 +100,11 @@ export const deleteTransaction = async (id: string): Promise<void> => {
 // Get all transactions
 export const getAllTransactions = async (): Promise<Transaction[]> => {
   if (!isFirestoreAvailable()) {
+    // In demo mode, return empty array instead of throwing error
+    if (isInDemoMode()) {
+      console.log('Demo mode: returning empty transactions array');
+      return [];
+    }
     throw new Error('Firestore is not properly configured');
   }
 
@@ -163,6 +186,11 @@ export const getTransactionsByMonth = async (month: number, year: number): Promi
 // Sync local transactions to Firestore
 export const syncTransactionsToFirestore = async (transactions: Transaction[]): Promise<boolean> => {
   if (!isFirestoreAvailable()) {
+    // In demo mode, pretend sync was successful
+    if (isInDemoMode()) {
+      console.log('Demo mode: simulating successful sync');
+      return true;
+    }
     console.warn('Firestore is not properly configured, cannot sync');
     return false;
   }

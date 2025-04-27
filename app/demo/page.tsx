@@ -17,15 +17,36 @@ import { usePin } from "../lib/data/PinContext";
 import { useRouter } from "next/navigation";
 
 export default function Demo() {
-  const { enterDemoMode, isDemo } = usePin();
+  const { enterDemoMode, isDemo, exitDemoMode } = usePin();
   const router = useRouter();
   
-  // Ensure we're in demo mode
+  // Force activate demo mode when this page is loaded
   useEffect(() => {
+    // First ensure we're in demo mode
     if (!isDemo) {
-      enterDemoMode();
+      console.log('Activating demo mode');
+      
+      // Exit any existing session first to clear state
+      exitDemoMode();
+      
+      // Enter demo mode
+      setTimeout(() => {
+        enterDemoMode();
+      }, 100);
     }
-  }, [isDemo, enterDemoMode]);
+    
+    // Force localStorage to have demo_mode=true for Firebase checks
+    localStorage.setItem('demo_mode', 'true');
+    
+    // This cleanup function runs when component unmounts
+    return () => {
+      // No need to check isDemo here as it could be stale in the cleanup function
+      // Just ensure localStorage is consistent with what we expect
+      if (localStorage.getItem('demo_mode') === 'true') {
+        console.log('Preserving demo mode state on cleanup');
+      }
+    };
+  }, [isDemo, enterDemoMode, exitDemoMode]);
   
   // Sample demo data
   const demoBalance = 1250.75;

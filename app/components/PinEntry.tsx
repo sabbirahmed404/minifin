@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { LockIcon, KeyIcon, PlayIcon } from "lucide-react";
+import Image from "next/image";
 
 export default function PinEntry() {
   const { authenticateWithPin, enterDemoMode } = usePin();
@@ -45,7 +46,15 @@ export default function PinEntry() {
           <div className="mx-auto rounded-full bg-[#BE3144]/20 p-3 mb-3">
             <LockIcon className="h-6 w-6 text-[#BE3144]" />
           </div>
-          <CardTitle className="text-2xl">MiniFin</CardTitle>
+          <div className="flex justify-center mb-2">
+            <Image 
+              src="/logo.png" 
+              alt="MiniFin Logo" 
+              width={150} 
+              height={150} 
+              className="h-auto w-auto" 
+            />
+          </div>
           <CardDescription className="text-gray-400">
             Enter your PIN to access your financial data
           </CardDescription>

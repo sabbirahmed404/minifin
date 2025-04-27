@@ -32,30 +32,42 @@ export const PinProvider = ({ children }: { children: ReactNode }) => {
 
   // Check if we have a stored auth state on mount
   useEffect(() => {
-    const storedAuthState = localStorage.getItem("pin_authenticated");
-    const storedDemoState = localStorage.getItem("demo_mode");
-    
-    if (storedAuthState === "true") {
-      setIsAuthenticated(true);
-    }
-    
-    if (storedDemoState === "true") {
-      setIsDemo(true);
+    if (typeof window !== 'undefined') {
+      const storedAuthState = localStorage.getItem("pin_authenticated");
+      const storedDemoState = localStorage.getItem("demo_mode");
+      
+      if (storedAuthState === "true") {
+        setIsAuthenticated(true);
+      }
+      
+      if (storedDemoState === "true") {
+        setIsDemo(true);
+        setIsAuthenticated(true); // Always ensure authenticated when in demo mode
+      }
+      
+      // For debugging
+      console.log(`Auth state on mount: isAuthenticated=${storedAuthState === "true"}, isDemo=${storedDemoState === "true"}`);
     }
   }, []);
 
   const authenticateWithPin = (pin: string): boolean => {
     if (pin === DEFAULT_PIN) {
+      // Exit demo mode if active
+      if (isDemo) {
+        localStorage.removeItem("demo_mode");
+      }
+      
       setIsAuthenticated(true);
       setIsDemo(false);
       localStorage.setItem("pin_authenticated", "true");
-      localStorage.removeItem("demo_mode");
+      console.log('Authenticated with PIN');
       return true;
     }
     return false;
   };
 
   const enterDemoMode = () => {
+    console.log('Entering demo mode');
     setIsDemo(true);
     setIsAuthenticated(true);
     localStorage.setItem("demo_mode", "true");
@@ -63,6 +75,7 @@ export const PinProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const exitDemoMode = () => {
+    console.log('Exiting demo mode');
     setIsDemo(false);
     setIsAuthenticated(false);
     localStorage.removeItem("demo_mode");
@@ -70,11 +83,17 @@ export const PinProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = () => {
+    console.log('Logging out');
     setIsAuthenticated(false);
     setIsDemo(false);
     localStorage.removeItem("pin_authenticated");
     localStorage.removeItem("demo_mode");
   };
+
+  // Log state changes for debugging
+  useEffect(() => {
+    console.log(`Auth state updated: isAuthenticated=${isAuthenticated}, isDemo=${isDemo}`);
+  }, [isAuthenticated, isDemo]);
 
   const value = {
     isAuthenticated,
